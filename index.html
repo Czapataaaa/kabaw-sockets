@@ -77,7 +77,7 @@
 
                 ws.onmessage = function(event) {
                     const message = JSON.parse(event.data);
-                    console.log(`[FRONTEND-MESSAGE] Type: ${message.type} | User: ${message.username}${message.user_id ? ` (ID: ${message.user_id})` : ''} | Channel: ${message.channel || 'unknown'} | Content: ${message.content}`);
+                    console.log('[FRONTEND-MESSAGE]', JSON.stringify(message, null, 2));
                     addMessage(message.type, message.username, message.content, message.timestamp);
                 };
 
@@ -121,7 +121,7 @@
                     content: content
                 };
 
-                console.log(`[FRONTEND-SEND] Sending message: ${content}`);
+                console.log('[FRONTEND-SEND]', JSON.stringify(message, null, 2));
                 ws.send(JSON.stringify(message));
                 messageInput.value = '';
             }

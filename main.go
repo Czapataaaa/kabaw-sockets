@@ -103,7 +103,7 @@ var simulatedUsers = []SimulatedUser{
 // StartMessageSimulation starts generating simulated messages for the general channel
 func (h *Hub) StartMessageSimulation() {
 	go func() {
-		ticker := time.NewTicker(time.Duration(5+rand.Intn(10)) * time.Second)
+		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
 
 		for {
@@ -138,8 +138,8 @@ func (h *Hub) StartMessageSimulation() {
 					h.broadcast <- message
 				}
 
-				// Reset ticker with random interval (5-15 seconds)
-				ticker.Reset(time.Duration(5+rand.Intn(10)) * time.Second)
+				// Reset ticker to 10 seconds
+				ticker.Reset(10 * time.Second)
 			}
 		}
 	}()

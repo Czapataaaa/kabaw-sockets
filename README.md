@@ -104,10 +104,10 @@ CheckOrigin: func(r *http.Request) bool {
 
 The server automatically generates simulated messages in the **"general"** channel to keep the chat active during testing:
 
-- **Automatic messages**: Random messages are sent every 5-15 seconds
+- **Automatic messages**: Random messages are sent every 10 seconds
 - **Only when active**: Messages are only sent when users are connected to the "general" channel
 - **Variety**: 18+ different message templates with 3 different simulated users (each with unique UUIDs)
-- **Realistic timing**: Random intervals to simulate natural conversation flow
+- **Consistent timing**: Messages sent every 10 seconds for predictable testing
 
 ### Simulated Test Users
 
@@ -134,7 +134,7 @@ This feature makes it easy to test the real-time messaging functionality without
 **To see simulated messages:**
 1. Start the WebSocket server: `go run main.go`
 2. Connect to the "general" channel via the test client
-3. Watch as simulated messages appear automatically every 5-15 seconds
+3. Watch as simulated messages appear automatically every 10 seconds
 4. The simulation stops when no users are connected to "general"
 
 ## Console Logging
@@ -169,8 +169,8 @@ The test client also provides detailed logging in the browser's developer consol
 
 - **`[FRONTEND-CONNECT]`**: Connection attempts and successful connections
 - **`[FRONTEND-DISCONNECT]`**: User-initiated disconnections and connection closures
-- **`[FRONTEND-MESSAGE]`**: All incoming messages with full details including user IDs
-- **`[FRONTEND-SEND]`**: Outgoing messages being sent to the server
+- **`[FRONTEND-MESSAGE]`**: All incoming messages in pretty-printed JSON format
+- **`[FRONTEND-SEND]`**: Outgoing messages in JSON format before sending
 - **`[FRONTEND-ERROR]`**: Connection errors and failures
 
 ### Example Browser Console Output
@@ -178,10 +178,32 @@ The test client also provides detailed logging in the browser's developer consol
 ```javascript
 [FRONTEND-CONNECT] Attempting to connect to: ws://localhost:8080/ws?username=TestUser&channel=general
 [FRONTEND-CONNECT] Connected to WebSocket as TestUser in channel general
-[FRONTEND-MESSAGE] Type: system | User: System | Channel: general | Content: Welcome to the chat!
-[FRONTEND-MESSAGE] Type: message | User: ChatBot (ID: 550e8400-e29b-41d4-a716-446655440001) | Channel: general | Content: Welcome to the chat! 👋
-[FRONTEND-SEND] Sending message: Hello everyone!
-[FRONTEND-MESSAGE] Type: message | User: TestUser | Channel: general | Content: Hello everyone!
+[FRONTEND-MESSAGE] {
+  "type": "system",
+  "username": "System",
+  "content": "Welcome to the chat!",
+  "timestamp": "2025-08-15T15:20:00Z",
+  "channel": "general"
+}
+[FRONTEND-MESSAGE] {
+  "type": "message",
+  "username": "ChatBot",
+  "user_id": "550e8400-e29b-41d4-a716-446655440001",
+  "content": "Welcome to the chat! 👋",
+  "timestamp": "2025-08-15T15:20:10Z",
+  "channel": "general"
+}
+[FRONTEND-SEND] {
+  "type": "message",
+  "content": "Hello everyone!"
+}
+[FRONTEND-MESSAGE] {
+  "type": "message",
+  "username": "TestUser",
+  "content": "Hello everyone!",
+  "timestamp": "2025-08-15T15:20:15Z",
+  "channel": "general"
+}
 [FRONTEND-DISCONNECT] User initiated disconnect
 [FRONTEND-DISCONNECT] Connection closed. Code: 1000, Reason: 
 ```
