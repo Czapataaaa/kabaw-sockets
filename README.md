@@ -52,7 +52,7 @@ To test cross-origin WebSocket functionality:
    ```
 
 3. **Access the test client:**
-   - Open `http://localhost:6969/test_client.html` in your browser
+   - Open `http://localhost:6969/` in your browser (default route)
    - The HTML is served from port 6969, but connects to WebSocket on port 8080
    - This demonstrates cross-origin WebSocket support
 
@@ -180,12 +180,20 @@ curl http://localhost:8080/stats
 ### Project Structure
 ```
 kabawDiscord/
+├── .gitignore           # Git ignore file for build artifacts and dependencies
 ├── main.go              # Main server implementation
 ├── go.mod               # Go module definition
 ├── package.json         # npm configuration for HTTP server
+├── index.html           # Default route for npm server (copy of test client)
 ├── styles.css           # CSS styles for test client
 ├── test_client.html     # Interactive HTML test client
 └── README.md            # This file
+
+# Ignored by .gitignore:
+# ├── node_modules/        # npm dependencies
+# ├── package-lock.json    # npm lock file
+# ├── kabaw-discord        # compiled Go binary
+# └── *.log                # log files
 ```
 
 ### Key Components
