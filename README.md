@@ -171,14 +171,9 @@ const ws = new WebSocket('ws://localhost:8080/ws?username=CandidateName&channel=
 
 ### ⚠️ Important Notes for Candidates
 
-**DO NOT MODIFY**:
-- `main.go` - The WebSocket server implementation
-- `go.mod` - Go dependencies
-- Any server-side code
-
 **YOU SHOULD**:
 - Create a new React project (using `create-react-app` or similar)
-- Build your React app in a separate directory/repository
+- Build your React app in **your own separate repository**
 - Connect your React app to the provided WebSocket server
 - Focus on frontend implementation only
 
@@ -207,7 +202,7 @@ const ws = new WebSocket('ws://localhost:8080/ws?username=CandidateName&channel=
    ```bash
    # Test server health
    curl http://localhost:8080/health
-   
+
    # View server stats
    curl http://localhost:8080/stats
    ```
@@ -383,7 +378,7 @@ The test client also provides detailed logging in the browser's developer consol
   "channel": "general"
 }
 [FRONTEND-DISCONNECT] User initiated disconnect
-[FRONTEND-DISCONNECT] Connection closed. Code: 1000, Reason: 
+[FRONTEND-DISCONNECT] Connection closed. Code: 1000, Reason:
 ```
 
 ### How to View Frontend Logs
@@ -622,25 +617,46 @@ This technical evaluation tests your ability to:
 1. **Set up and run a Go WebSocket server** (following the provided instructions)
 2. **Create a React application** that connects to real-time WebSocket services
 3. **Implement proper WebSocket handling** in a modern frontend framework
-4. **Build a functional chat interface** with real-time message updates
-5. **Handle edge cases** like connection failures and reconnections
+4. **Provide Feasible Timelines** Be able to accurately access the timetline for implementation
+5. **Alternative Solutions** To be able to provide an alternative solution if timelines are not feasible
 
-### Success Criteria
+### Submission Requirements
 
-Your React application should:
-- ✅ Successfully connect to `ws://localhost:8080/ws`
-- ✅ Display real-time messages from the server
-- ✅ Allow users to send messages
-- ✅ Show connection status
-- ✅ Handle the automatic test messages (from ChatBot, Developer, SystemHelper)
-- ✅ Display user IDs when provided
-- ✅ Have a clean, professional user interface
+**Create your own repository** and submit your React application with:
 
-### Submission
+1. **Your React Application Code**
+   - Complete React project in your own GitHub repository
+   - Clean, well-organized code structure
+   - Proper component organization
 
-Submit your React application code along with:
-- Instructions on how to run your React app
-- Screenshots or video demonstration of the working chat
-- Brief explanation of your implementation approach
+2. **README.md in your repository** containing:
+   - Instructions on how to install and run your React app
+   - Prerequisites (Node.js version, npm/yarn, etc.)
+   - Step-by-step setup guide
+   - How to connect to the WebSocket server
+
+3. **Documentation**
+   - Screenshots or video demonstration of the working chat
+   - Brief explanation of your implementation approach
+   - Any challenges faced and how you solved them
+   - Technologies and libraries used
+
+4. **Repository Structure Example**:
+   ```
+   your-chat-app-repo/
+   ├── README.md              # Your setup instructions
+   ├── package.json           # Dependencies
+   ├── src/
+   │   ├── components/        # React components
+   │   ├── hooks/            # Custom hooks (WebSocket, etc.)
+   │   ├── utils/            # Utility functions
+   │   └── App.js            # Main app component
+   └── public/               # Static assets
+   ```
+
+**Submission Method**:
+- submit in provided github link
+
+**⚠️ Important**: Do NOT fork this repository. Create your own independent repository for your React application.
 
 **Good luck! 🚀**
