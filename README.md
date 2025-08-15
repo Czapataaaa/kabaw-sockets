@@ -1,6 +1,30 @@
-# Kabaw Chat WebSocket Server
+![Kabaw Logo](logo.png)
 
-A simple Go WebSocket server for real-time messaging, similar to Discord. This server provides a basic chat system with support for multiple channels and users.
+# Kabaw Chat WebSocket Server - Technical Evaluation
+
+This repository is a **technical evaluation document** to test the competency of a candidate to implement frontend with real-time messaging and WebSockets.
+
+## 🎯 Candidate Task
+
+**You are required to create your own React single-page application that will connect to the WebSocket server running on `localhost:8080`.**
+
+The provided Go server is a complete WebSocket implementation for real-time messaging. Your task is to build a React frontend that demonstrates your ability to:
+
+- Connect to WebSocket servers
+- Handle real-time message streaming  
+- Manage WebSocket connection states
+- Display live chat functionality
+- Handle user interactions and message sending
+
+## 📋 Evaluation Criteria
+
+Your React application will be evaluated on:
+
+1. **WebSocket Integration** - Proper connection and message handling
+2. **Real-time Updates** - Live message display without page refresh
+3. **User Experience** - Intuitive chat interface design
+4. **Error Handling** - Connection failures and reconnection logic
+5. **Code Quality** - Clean, maintainable React code structure
 
 ## Features
 
@@ -16,29 +40,182 @@ A simple Go WebSocket server for real-time messaging, similar to Discord. This s
 - **Frontend console logging** in browser developer tools (client-side)
 - **Automatic user ID generation** - each connection receives a unique user ID
 
-## Prerequisites
+## 🚀 Getting Started - Running the WebSocket Server
+
+### Prerequisites
 
 - Go 1.21 or higher
 - Internet connection (for downloading dependencies)
 
-## Installation & Setup
+### Installing Go
 
-1. **Clone or navigate to the project directory:**
-   ```bash
-   cd /home/moon8ear/Desktop/projects/kabawDiscord
-   ```
+#### On Linux (Ubuntu/Debian)
+```bash
+# Method 1: Using package manager (may not have latest version)
+sudo apt update
+sudo apt install golang-go
 
-2. **Install dependencies:**
-   ```bash
-   go mod tidy
-   ```
+# Method 2: Download latest version from official site
+wget https://go.dev/dl/go1.21.0.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+source ~/.bashrc
+```
 
-3. **Run the server:**
+#### On macOS
+```bash
+# Method 1: Using Homebrew
+brew install go
+
+# Method 2: Download from official site
+# Visit https://go.dev/dl/ and download the macOS installer
+# Double-click the .pkg file and follow the installation prompts
+```
+
+#### Verify Installation
+```bash
+go version
+# Should output: go version go1.21.0 linux/amd64 (or similar)
+```
+
+### Step-by-Step Server Setup
+
+#### Step 1: Clone the Repository
+```bash
+git clone <repository-url>
+cd kabawDiscord
+```
+
+#### Step 2: Install Go Dependencies
+```bash
+go mod tidy
+```
+This command will download the required WebSocket library (`gorilla/websocket`).
+
+#### Step 3: Build the Server (Optional)
+```bash
+go build -o kabaw-discord main.go
+```
+This creates an executable binary. You can run it directly with `./kabaw-discord`.
+
+#### Step 4: Run the WebSocket Server
+```bash
+# Option 1: Run directly with Go
+go run main.go
+
+# Option 2: Run the compiled binary
+./kabaw-discord
+```
+
+#### Step 5: Verify Server is Running
+The server will start and display:
+```
+2025/08/15 15:33:05 Server starting on port :8080
+```
+
+Test the server health:
+```bash
+curl http://localhost:8080/health
+# Should return: {"service":"kabaw-discord-server","status":"ok"}
+```
+
+🎉 **Your WebSocket server is now running on `ws://localhost:8080/ws`**
+
+## 💻 For Candidates: Building Your React Application
+
+Now that the server is running, you need to create a React application that connects to it.
+
+### Required React App Features
+
+Your React application must implement:
+
+1. **WebSocket Connection Management**
+   - Connect to `ws://localhost:8080/ws?username=YourName&channel=general`
+   - Handle connection states (connecting, connected, disconnected)
+   - Implement reconnection logic
+
+2. **Real-time Message Display**
+   - Show incoming messages in real-time
+   - Display message metadata (username, timestamp, user ID)
+   - Handle different message types (`message`, `system`, `user_connected`)
+
+3. **Message Sending**
+   - Input field for typing messages
+   - Send button functionality
+   - Handle Enter key for sending
+
+4. **User Interface Requirements**
+   - Clean, modern chat interface
+   - Message history display
+   - Connection status indicator
+   - User identification (show your assigned user ID)
+
+5. **Error Handling**
+   - Display connection errors
+   - Handle WebSocket disconnections gracefully
+   - Show loading states
+
+### WebSocket Connection Details
+
+**Endpoint**: `ws://localhost:8080/ws`
+
+**Query Parameters**:
+- `username` (optional): Your display name (default: "Anonymous")
+- `channel` (optional): Channel to join (default: "general")
+
+**Example Connection**:
+```javascript
+const ws = new WebSocket('ws://localhost:8080/ws?username=CandidateName&channel=general');
+```
+
+### ⚠️ Important Notes for Candidates
+
+**DO NOT MODIFY**:
+- `main.go` - The WebSocket server implementation
+- `go.mod` - Go dependencies
+- Any server-side code
+
+**YOU SHOULD**:
+- Create a new React project (using `create-react-app` or similar)
+- Build your React app in a separate directory/repository
+- Connect your React app to the provided WebSocket server
+- Focus on frontend implementation only
+
+**REFERENCE ONLY**:
+- `index.html` and `styles.css` are provided as reference implementations
+- You can view them to understand the expected functionality
+- Your React implementation should be original, not a copy of the reference client
+
+### 🛠️ Candidate Troubleshooting
+
+**Common Issues and Solutions**:
+
+1. **WebSocket Connection Refused**
    ```bash
+   # Make sure the Go server is running first
    go run main.go
+   # Should see: "Server starting on port :8080"
    ```
 
-The server will start on port 8080 by default.
+2. **CORS Issues**
+   - The server is configured to allow all origins
+   - Your React app can run on any port (3000, 3001, etc.)
+   - Cross-origin connections are fully supported
+
+3. **Connection Testing**
+   ```bash
+   # Test server health
+   curl http://localhost:8080/health
+   
+   # View server stats
+   curl http://localhost:8080/stats
+   ```
+
+4. **Message Format Debugging**
+   - Check browser console for WebSocket messages
+   - All messages are logged in JSON format
+   - Server logs show all connections and messages
 
 ## Testing Cross-Origin WebSocket Connections
 
@@ -397,20 +574,17 @@ curl http://localhost:8080/stats
 ### Project Structure
 ```
 kabawDiscord/
+├── logo.png             # Project logo
 ├── .gitignore           # Git ignore file for build artifacts and dependencies
-├── main.go              # Main server implementation
+├── main.go              # WebSocket server implementation (MAIN FILE)
 ├── go.mod               # Go module definition
-├── package.json         # npm configuration for HTTP server
-├── index.html           # Default route for npm server (copy of test client)
-├── styles.css           # CSS styles for test client
-├── test_client.html     # Interactive HTML test client
-└── README.md            # This file
+├── index.html           # Reference test client (for testing only)
+├── styles.css           # CSS for reference client
+└── README.md            # This evaluation document
 
-# Ignored by .gitignore:
-# ├── node_modules/        # npm dependencies
-# ├── package-lock.json    # npm lock file
-# ├── kabaw-discord        # compiled Go binary
-# └── *.log                # log files
+# Files generated after setup:
+# ├── kabaw-discord        # compiled Go binary (after go build)
+# └── go.sum               # dependency checksums (after go mod tidy)
 ```
 
 ### Key Components
@@ -439,4 +613,34 @@ port := ":8080"  // Change this to your desired port
 
 ## License
 
-This is a simple example project for educational purposes.
+---
+
+## 📝 Summary for Candidates
+
+This technical evaluation tests your ability to:
+
+1. **Set up and run a Go WebSocket server** (following the provided instructions)
+2. **Create a React application** that connects to real-time WebSocket services
+3. **Implement proper WebSocket handling** in a modern frontend framework
+4. **Build a functional chat interface** with real-time message updates
+5. **Handle edge cases** like connection failures and reconnections
+
+### Success Criteria
+
+Your React application should:
+- ✅ Successfully connect to `ws://localhost:8080/ws`
+- ✅ Display real-time messages from the server
+- ✅ Allow users to send messages
+- ✅ Show connection status
+- ✅ Handle the automatic test messages (from ChatBot, Developer, SystemHelper)
+- ✅ Display user IDs when provided
+- ✅ Have a clean, professional user interface
+
+### Submission
+
+Submit your React application code along with:
+- Instructions on how to run your React app
+- Screenshots or video demonstration of the working chat
+- Brief explanation of your implementation approach
+
+**Good luck! 🚀**
