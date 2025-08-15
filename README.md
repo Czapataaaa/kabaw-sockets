@@ -1,4 +1,4 @@
-# Kabaw Discord WebSocket Server
+# Kabaw Chat WebSocket Server
 
 A simple Go WebSocket server for real-time messaging, similar to Discord. This server provides a basic chat system with support for multiple channels and users.
 
@@ -11,6 +11,7 @@ A simple Go WebSocket server for real-time messaging, similar to Discord. This s
 - Health check endpoint
 - Simple web interface for testing
 - **Cross-Origin Resource Sharing (CORS) support** for WebSocket connections
+- **Automatic message simulation** in the "general" channel for testing
 
 ## Prerequisites
 
@@ -96,6 +97,27 @@ CheckOrigin: func(r *http.Request) bool {
     return origin == "https://yourdomain.com"
 }
 ```
+
+## Message Simulation
+
+The server automatically generates simulated messages in the **"general"** channel to keep the chat active during testing:
+
+- **Automatic messages**: Random messages are sent every 5-15 seconds
+- **Only when active**: Messages are only sent when users are connected to the "general" channel
+- **Variety**: 18+ different message templates with 8 different simulated usernames
+- **Realistic timing**: Random intervals to simulate natural conversation flow
+
+**Simulated usernames include**: ChatBot, TestUser, Developer, WebSocketFan, CodeNinja, GoLang_Lover, MessageBot, SystemHelper
+
+**Sample messages**: Welcome messages, programming discussions, general chat, system updates, and friendly conversation starters.
+
+This feature makes it easy to test the real-time messaging functionality without needing multiple users connected simultaneously.
+
+**To see simulated messages:**
+1. Start the WebSocket server: `go run main.go`
+2. Connect to the "general" channel via the test client
+3. Watch as simulated messages appear automatically every 5-15 seconds
+4. The simulation stops when no users are connected to "general"
 
 ## API Endpoints
 

@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -52,6 +54,79 @@ func NewHub() *Hub {
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 	}
+}
+
+// Simulated messages for the general channel
+var simulatedMessages = []string{
+	"Welcome to the chat! 👋",
+	"How's everyone doing today?",
+	"This is a simulated message to keep the chat active",
+	"Feel free to join the conversation!",
+	"Testing the WebSocket connection...",
+	"Anyone else working on Go projects?",
+	"The weather is nice today ☀️",
+	"Don't forget to stay hydrated! 💧",
+	"What's your favorite programming language?",
+	"This chat supports multiple channels",
+	"WebSocket connections are pretty cool!",
+	"Hope you're having a great day! 😊",
+	"Remember to take breaks while coding",
+	"Coffee or tea? ☕",
+	"The server is running smoothly",
+	"Cross-origin requests work perfectly here",
+	"Real-time messaging is awesome!",
+	"Thanks for testing the chat system",
+}
+
+var simulatedUsernames = []string{
+	"ChatBot",
+	"TestUser",
+	"Developer",
+	"WebSocketFan",
+	"CodeNinja",
+	"GoLang_Lover",
+	"MessageBot",
+	"SystemHelper",
+}
+
+// StartMessageSimulation starts generating simulated messages for the general channel
+func (h *Hub) StartMessageSimulation() {
+	go func() {
+		ticker := time.NewTicker(time.Duration(5+rand.Intn(10)) * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				// Only send messages if there are clients connected to general channel
+				h.mutex.RLock()
+				hasGeneralClients := false
+				for client := range h.clients {
+					if client.channel == "general" {
+						hasGeneralClients = true
+						break
+					}
+				}
+				h.mutex.RUnlock()
+
+				if hasGeneralClients {
+					// Generate a random simulated message
+					message := Message{
+						Type:      "message",
+						Username:  simulatedUsernames[rand.Intn(len(simulatedUsernames))],
+						Content:   simulatedMessages[rand.Intn(len(simulatedMessages))],
+						Timestamp: getCurrentTimestamp(),
+						Channel:   "general",
+					}
+
+					h.broadcast <- message
+				}
+
+				// Reset ticker with random interval (5-15 seconds)
+				ticker.Reset(time.Duration(5+rand.Intn(10)) * time.Second)
+			}
+		}
+	}()
 }
 
 // Run starts the hub
@@ -218,12 +293,18 @@ func handleStats(hub *Hub) http.HandlerFunc {
 
 // Get current timestamp in ISO format
 func getCurrentTimestamp() string {
-	return "2024-01-01T00:00:00Z" // Simplified for this example
+	return time.Now().Format(time.RFC3339)
 }
 
 func main() {
+	// Seed random number generator
+	rand.Seed(time.Now().UnixNano())
+
 	hub := NewHub()
 	go hub.Run()
+
+	// Start message simulation for general channel
+	hub.StartMessageSimulation()
 
 	// Routes
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
