@@ -232,7 +232,18 @@ func main() {
 	http.HandleFunc("/health", handleHealth)
 	http.HandleFunc("/stats", handleStats(hub))
 
-	// Serve static files (optional)
+	// Serve CSS file specifically
+	http.HandleFunc("/static/styles.css", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/css")
+		http.ServeFile(w, r, "styles.css")
+	})
+
+	// Serve test client
+	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "test_client.html")
+	})
+
+	// Default route
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)
@@ -250,6 +261,7 @@ func main() {
     <p>WebSocket endpoint: <code>ws://localhost:8080/ws</code></p>
     <p>Health check: <a href="/health">/health</a></p>
     <p>Stats: <a href="/stats">/stats</a></p>
+    <p>Test Client: <a href="/test">Launch Test Client</a></p>
     <h2>Usage:</h2>
     <p>Connect to WebSocket with query parameters:</p>
     <ul>

@@ -62,6 +62,14 @@ ws://localhost:8080/ws?username=JohnDoe&channel=general
 - **Endpoint:** `GET /`
 - **Response:** Simple HTML page with usage instructions
 
+#### Test Client
+- **Endpoint:** `GET /test`
+- **Response:** Interactive HTML test client with WebSocket functionality
+
+#### Static Files
+- **Endpoint:** `GET /static/styles.css`
+- **Response:** CSS stylesheet for the test client
+
 ## Message Format
 
 ### Incoming Messages (Client to Server)
@@ -151,9 +159,11 @@ curl http://localhost:8080/stats
 ### Project Structure
 ```
 kabawDiscord/
-├── main.go          # Main server implementation
-├── go.mod           # Go module definition
-└── README.md        # This file
+├── main.go              # Main server implementation
+├── go.mod               # Go module definition
+├── styles.css           # CSS styles for test client
+├── test_client.html     # Interactive HTML test client
+└── README.md            # This file
 ```
 
 ### Key Components
@@ -179,36 +189,6 @@ port := ":8080"  // Change this to your desired port
 - Simplified timestamp handling
 - No rate limiting
 
-## Future Enhancements
-
-- Message history/persistence
-- User authentication
-- Channel permissions
-- Rate limiting
-- Message encryption
-- File sharing support
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Port already in use:**
-   ```bash
-   # Find process using port 8080
-   lsof -i :8080
-   # Kill the process or change the port in main.go
-   ```
-
-2. **Dependencies not found:**
-   ```bash
-   go mod tidy
-   go mod download
-   ```
-
-3. **WebSocket connection failed:**
-   - Check if server is running
-   - Verify the WebSocket URL format
-   - Check browser console for errors
 
 ## License
 
