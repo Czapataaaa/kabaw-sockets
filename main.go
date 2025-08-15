@@ -15,6 +15,7 @@ import (
 type Message struct {
 	Type      string `json:"type"`
 	Username  string `json:"username"`
+	UserID    string `json:"user_id,omitempty"`
 	Content   string `json:"content"`
 	Timestamp string `json:"timestamp"`
 	Channel   string `json:"channel,omitempty"`
@@ -78,15 +79,25 @@ var simulatedMessages = []string{
 	"Thanks for testing the chat system",
 }
 
-var simulatedUsernames = []string{
-	"ChatBot",
-	"TestUser",
-	"Developer",
-	"WebSocketFan",
-	"CodeNinja",
-	"GoLang_Lover",
-	"MessageBot",
-	"SystemHelper",
+// SimulatedUser represents a test user with UUID
+type SimulatedUser struct {
+	Username string
+	UserID   string
+}
+
+var simulatedUsers = []SimulatedUser{
+	{
+		Username: "ChatBot",
+		UserID:   "550e8400-e29b-41d4-a716-446655440001", // Fixed UUID for ChatBot
+	},
+	{
+		Username: "Developer",
+		UserID:   "550e8400-e29b-41d4-a716-446655440002", // Fixed UUID for Developer
+	},
+	{
+		Username: "SystemHelper",
+		UserID:   "550e8400-e29b-41d4-a716-446655440003", // Fixed UUID for SystemHelper
+	},
 }
 
 // StartMessageSimulation starts generating simulated messages for the general channel
@@ -111,13 +122,18 @@ func (h *Hub) StartMessageSimulation() {
 
 				if hasGeneralClients {
 					// Generate a random simulated message
+					selectedUser := simulatedUsers[rand.Intn(len(simulatedUsers))]
 					message := Message{
 						Type:      "message",
-						Username:  simulatedUsernames[rand.Intn(len(simulatedUsernames))],
+						Username:  selectedUser.Username,
+						UserID:    selectedUser.UserID,
 						Content:   simulatedMessages[rand.Intn(len(simulatedMessages))],
 						Timestamp: getCurrentTimestamp(),
 						Channel:   "general",
 					}
+
+					// Log the simulated message
+					log.Printf("[SIMULATED] Channel: %s | User: %s (ID: %s) | Content: %s", message.Channel, message.Username, message.UserID, message.Content)
 
 					h.broadcast <- message
 				}
@@ -138,7 +154,7 @@ func (h *Hub) Run() {
 			h.clients[client] = true
 			h.mutex.Unlock()
 
-			log.Printf("Client %s connected to channel %s", client.username, client.channel)
+			log.Printf("[CONNECT] User: %s | Channel: %s | Total clients: %d", client.username, client.channel, len(h.clients))
 
 			// Send welcome message
 			welcomeMsg := Message{
@@ -160,7 +176,7 @@ func (h *Hub) Run() {
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
-				log.Printf("Client %s disconnected from channel %s", client.username, client.channel)
+				log.Printf("[DISCONNECT] User: %s | Channel: %s | Total clients: %d", client.username, client.channel, len(h.clients))
 			}
 			h.mutex.Unlock()
 
@@ -210,6 +226,9 @@ func (c *Client) readPump() {
 		msg.Username = c.username
 		msg.Timestamp = getCurrentTimestamp()
 		msg.Channel = c.channel
+
+		// Log the incoming message
+		log.Printf("[MESSAGE] Channel: %s | User: %s | Content: %s", msg.Channel, msg.Username, msg.Content)
 
 		// Broadcast the message
 		c.hub.broadcast <- msg

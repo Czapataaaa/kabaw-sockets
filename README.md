@@ -12,6 +12,7 @@ A simple Go WebSocket server for real-time messaging, similar to Discord. This s
 - Simple web interface for testing
 - **Cross-Origin Resource Sharing (CORS) support** for WebSocket connections
 - **Automatic message simulation** in the "general" channel for testing
+- **Console logging** for all messages, connections, and disconnections
 
 ## Prerequisites
 
@@ -104,12 +105,28 @@ The server automatically generates simulated messages in the **"general"** chann
 
 - **Automatic messages**: Random messages are sent every 5-15 seconds
 - **Only when active**: Messages are only sent when users are connected to the "general" channel
-- **Variety**: 18+ different message templates with 8 different simulated usernames
+- **Variety**: 18+ different message templates with 3 different simulated users (each with unique UUIDs)
 - **Realistic timing**: Random intervals to simulate natural conversation flow
 
-**Simulated usernames include**: ChatBot, TestUser, Developer, WebSocketFan, CodeNinja, GoLang_Lover, MessageBot, SystemHelper
+### Simulated Test Users
 
-**Sample messages**: Welcome messages, programming discussions, general chat, system updates, and friendly conversation starters.
+When connected to the **"general"** channel, you'll see messages from these automated test users (each with unique UUIDs):
+
+| Username | UUID | Description |
+|----------|------|-------------|
+| `ChatBot` | `550e8400-e29b-41d4-a716-446655440001` | Friendly bot that welcomes users and provides helpful tips |
+| `Developer` | `550e8400-e29b-41d4-a716-446655440002` | Programming-focused user discussing code and development |
+| `SystemHelper` | `550e8400-e29b-41d4-a716-446655440003` | Helper bot offering guidance and support |
+
+### Sample Message Types
+
+The simulated users will send various types of messages including:
+- **Welcome messages**: "Welcome to the chat! 👋"
+- **Programming discussions**: "Anyone else working on Go projects?"
+- **General chat**: "How's everyone doing today?"
+- **System updates**: "The server is running smoothly"
+- **Friendly interactions**: "Hope you're having a great day! 😊"
+- **Conversation starters**: "Coffee or tea? ☕"
 
 This feature makes it easy to test the real-time messaging functionality without needing multiple users connected simultaneously.
 
@@ -118,6 +135,30 @@ This feature makes it easy to test the real-time messaging functionality without
 2. Connect to the "general" channel via the test client
 3. Watch as simulated messages appear automatically every 5-15 seconds
 4. The simulation stops when no users are connected to "general"
+
+## Console Logging
+
+The server provides detailed console logging for monitoring activity:
+
+### Log Types
+
+- **`[CONNECT]`**: User connections with channel and total client count
+- **`[DISCONNECT]`**: User disconnections with updated client count
+- **`[MESSAGE]`**: Real user messages with channel, username, and content
+- **`[SIMULATED]`**: Automated test messages with user ID and content
+
+### Example Console Output
+
+```
+2025/08/15 15:16:35 Server starting on port :8080
+2025/08/15 15:16:40 [CONNECT] User: TestUser | Channel: general | Total clients: 1
+2025/08/15 15:16:45 [SIMULATED] Channel: general | User: ChatBot (ID: 550e8400-e29b-41d4-a716-446655440001) | Content: Welcome to the chat! 👋
+2025/08/15 15:16:50 [MESSAGE] Channel: general | User: TestUser | Content: Hello everyone!
+2025/08/15 15:17:00 [SIMULATED] Channel: general | User: Developer (ID: 550e8400-e29b-41d4-a716-446655440002) | Content: Anyone else working on Go projects?
+2025/08/15 15:17:10 [DISCONNECT] User: TestUser | Channel: general | Total clients: 0
+```
+
+This logging makes it easy to monitor server activity, debug issues, and understand message flow patterns.
 
 ## API Endpoints
 
