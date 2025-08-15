@@ -658,5 +658,6 @@ This technical evaluation tests your ability to:
 - submit in provided github link
 
 **⚠️ Important**: Do NOT fork this repository. Create your own independent repository for your React application.
+**⚠️ Important**: You are allowed to use any tools you deem necessary including generative AI, the only caveat is that you are able to understand any code you commit.
 
 **Good luck! 🚀**
