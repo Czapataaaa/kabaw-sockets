@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kabaw Discord Test Client</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="http://localhost:8080/static/styles.css">
 </head>
 <body>
     <div class="container">
         <h1>Kabaw Discord Test Client</h1>
+        <p><strong>Running on port 6969 - Testing cross-origin WebSocket to port 8080</strong></p>
         
         <div class="connection-form">
             <h3>Connection Settings</h3>
@@ -35,12 +36,13 @@
                 <li>Start typing messages in the input field</li>
                 <li>Open multiple tabs to test multi-user chat</li>
             </ol>
-            <p><strong>Server endpoints:</strong></p>
+            <p><strong>Server endpoints (on port 8080):</strong></p>
             <ul>
                 <li>WebSocket: <code>ws://localhost:8080/ws</code></li>
-                <li>Health: <a href="/health" target="_blank">/health</a></li>
-                <li>Stats: <a href="/stats" target="_blank">/stats</a></li>
+                <li>Health: <a href="http://localhost:8080/health" target="_blank">http://localhost:8080/health</a></li>
+                <li>Stats: <a href="http://localhost:8080/stats" target="_blank">http://localhost:8080/stats</a></li>
             </ul>
+            <p><strong>This client is served from port 6969 to test cross-origin WebSocket connections.</strong></p>
         </div>
     </div>
 
@@ -54,6 +56,7 @@
             
             currentUsername = username;
             
+            // Cross-origin WebSocket connection to port 8080 from port 6969
             const wsUrl = `ws://localhost:8080/ws?username=${encodeURIComponent(username)}&channel=${encodeURIComponent(channel)}`;
             
             try {

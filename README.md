@@ -10,6 +10,7 @@ A simple Go WebSocket server for real-time messaging, similar to Discord. This s
 - Connection statistics
 - Health check endpoint
 - Simple web interface for testing
+- **Cross-Origin Resource Sharing (CORS) support** for WebSocket connections
 
 ## Prerequisites
 
@@ -34,6 +35,26 @@ A simple Go WebSocket server for real-time messaging, similar to Discord. This s
    ```
 
 The server will start on port 8080 by default.
+
+## Testing Cross-Origin WebSocket Connections
+
+To test cross-origin WebSocket functionality:
+
+1. **Start the WebSocket server (port 8080):**
+   ```bash
+   go run main.go
+   ```
+
+2. **Start the HTTP client server (port 6969):**
+   ```bash
+   npm install
+   npm start
+   ```
+
+3. **Access the test client:**
+   - Open `http://localhost:6969/test_client.html` in your browser
+   - The HTML is served from port 6969, but connects to WebSocket on port 8080
+   - This demonstrates cross-origin WebSocket support
 
 ## API Endpoints
 
@@ -161,6 +182,7 @@ curl http://localhost:8080/stats
 kabawDiscord/
 ├── main.go              # Main server implementation
 ├── go.mod               # Go module definition
+├── package.json         # npm configuration for HTTP server
 ├── styles.css           # CSS styles for test client
 ├── test_client.html     # Interactive HTML test client
 └── README.md            # This file
