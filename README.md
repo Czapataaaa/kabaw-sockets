@@ -56,6 +56,47 @@ To test cross-origin WebSocket functionality:
    - The HTML is served from port 6969, but connects to WebSocket on port 8080
    - This demonstrates cross-origin WebSocket support
 
+### How Cross-Origin WebSocket Works
+
+The cross-origin functionality is enabled through two key mechanisms:
+
+#### Server-Side Configuration (Go)
+```go
+var upgrader = websocket.Upgrader{
+    CheckOrigin: func(r *http.Request) bool {
+        // Allow connections from any origin (for development)
+        return true
+    },
+}
+```
+- **Disables origin checking**: Normally WebSocket connections are restricted to same-origin
+- **Allows any domain/port** to connect to the WebSocket server
+- **Returns `true`** for all origin requests, bypassing browser security restrictions
+
+#### Client-Side Connection (JavaScript)
+```javascript
+// Cross-origin WebSocket connection to port 8080 from port 6969
+const wsUrl = `ws://localhost:8080/ws?username=${username}&channel=${channel}`;
+const ws = new WebSocket(wsUrl);
+```
+- HTML served from `http://localhost:6969` (npm server)
+- WebSocket connects to `ws://localhost:8080` (Go server)
+- **Different ports = different origins** → Cross-origin request
+- Browser allows connection because server's `CheckOrigin` returns `true`
+
+#### Additional CORS Support
+- npm http-server provides CORS headers: `access-control-allow-origin: *`
+- Enables cross-origin CSS loading: `http://localhost:8080/static/styles.css`
+- Demonstrates real-world scenario: frontend from CDN connecting to API
+
+**Security Note**: For production, restrict origins:
+```go
+CheckOrigin: func(r *http.Request) bool {
+    origin := r.Header.Get("Origin")
+    return origin == "https://yourdomain.com"
+}
+```
+
 ## API Endpoints
 
 ### WebSocket Connection
