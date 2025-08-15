@@ -1,4 +1,4 @@
-![Kabaw Logo](logo.png)
+![Kabaw Logo](logo.jpg)
 
 # Kabaw Chat WebSocket Server - Technical Evaluation
 
@@ -569,7 +569,7 @@ curl http://localhost:8080/stats
 ### Project Structure
 ```
 kabawDiscord/
-├── logo.png             # Project logo
+├── logo.jpg             # Project logo
 ├── .gitignore           # Git ignore file for build artifacts and dependencies
 ├── main.go              # WebSocket server implementation (MAIN FILE)
 ├── go.mod               # Go module definition
