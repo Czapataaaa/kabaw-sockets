@@ -10,10 +10,10 @@
     <div class="container">
         <h1>Kabaw Discord Test Client</h1>
         <p><strong>Running on port 6969 - Testing cross-origin WebSocket to port 8080</strong></p>
-        
+
         <div class="connection-form">
             <h3>Connection Settings</h3>
-            <input type="text" id="username" placeholder="Username" value="TestUser">
+            <input type="text" id="username" placeholder="Username" value="testKabaw">
             <input type="text" id="channel" placeholder="Channel" value="general">
             <button id="connectBtn" onclick="connect()">Connect</button>
             <button id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
@@ -53,22 +53,22 @@
         function connect() {
             const username = document.getElementById('username').value || 'Anonymous';
             const channel = document.getElementById('channel').value || 'general';
-            
+
             currentUsername = username;
-            
+
             // Cross-origin WebSocket connection to port 8080 from port 6969
             const wsUrl = `ws://localhost:8080/ws?username=${encodeURIComponent(username)}&channel=${encodeURIComponent(channel)}`;
-            
+
             try {
                 ws = new WebSocket(wsUrl);
-                
+
                 ws.onopen = function(event) {
                     updateStatus('Connected', true);
                     document.getElementById('connectBtn').disabled = true;
                     document.getElementById('disconnectBtn').disabled = false;
                     document.getElementById('messageInput').disabled = false;
                     document.getElementById('sendBtn').disabled = false;
-                    
+
                     addMessage('system', 'System', `Connected as ${username} to channel ${channel}`);
                 };
 
@@ -83,7 +83,7 @@
                     document.getElementById('disconnectBtn').disabled = true;
                     document.getElementById('messageInput').disabled = true;
                     document.getElementById('sendBtn').disabled = true;
-                    
+
                     addMessage('system', 'System', 'Connection closed');
                 };
 
@@ -91,7 +91,7 @@
                     console.error('WebSocket error:', error);
                     addMessage('system', 'System', 'Connection error occurred');
                 };
-                
+
             } catch (error) {
                 console.error('Failed to connect:', error);
                 addMessage('system', 'System', 'Failed to connect to server');
@@ -108,13 +108,13 @@
         function sendMessage() {
             const messageInput = document.getElementById('messageInput');
             const content = messageInput.value.trim();
-            
+
             if (content && ws && ws.readyState === WebSocket.OPEN) {
                 const message = {
                     type: 'message',
                     content: content
                 };
-                
+
                 ws.send(JSON.stringify(message));
                 messageInput.value = '';
             }
@@ -124,17 +124,17 @@
             const chatContainer = document.getElementById('chatContainer');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
-            
+
             if (type === 'system') {
                 messageDiv.innerHTML = `<em>${content}</em>`;
             } else {
                 const isCurrentUser = username === currentUsername;
                 messageDiv.className += isCurrentUser ? ' user' : ' other';
-                
+
                 const time = timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
                 messageDiv.innerHTML = `<strong>${username}</strong> <small>(${time})</small><br>${content}`;
             }
-            
+
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
