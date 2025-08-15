@@ -56,50 +56,56 @@
 
             currentUsername = username;
 
-            // Cross-origin WebSocket connection to port 8080 from port 6969
+                        // Cross-origin WebSocket connection to port 8080 from port 6969
             const wsUrl = `ws://localhost:8080/ws?username=${encodeURIComponent(username)}&channel=${encodeURIComponent(channel)}`;
-
+            
+            console.log(`[FRONTEND-CONNECT] Attempting to connect to: ${wsUrl}`);
+            
             try {
                 ws = new WebSocket(wsUrl);
 
-                ws.onopen = function(event) {
+                                ws.onopen = function(event) {
+                    console.log(`[FRONTEND-CONNECT] Connected to WebSocket as ${username} in channel ${channel}`);
                     updateStatus('Connected', true);
                     document.getElementById('connectBtn').disabled = true;
                     document.getElementById('disconnectBtn').disabled = false;
                     document.getElementById('messageInput').disabled = false;
                     document.getElementById('sendBtn').disabled = false;
-
+                    
                     addMessage('system', 'System', `Connected as ${username} to channel ${channel}`);
                 };
 
                 ws.onmessage = function(event) {
                     const message = JSON.parse(event.data);
+                    console.log(`[FRONTEND-MESSAGE] Type: ${message.type} | User: ${message.username}${message.user_id ? ` (ID: ${message.user_id})` : ''} | Channel: ${message.channel || 'unknown'} | Content: ${message.content}`);
                     addMessage(message.type, message.username, message.content, message.timestamp);
                 };
 
-                ws.onclose = function(event) {
+                                ws.onclose = function(event) {
+                    console.log(`[FRONTEND-DISCONNECT] Connection closed. Code: ${event.code}, Reason: ${event.reason || 'No reason provided'}`);
                     updateStatus('Disconnected', false);
                     document.getElementById('connectBtn').disabled = false;
                     document.getElementById('disconnectBtn').disabled = true;
                     document.getElementById('messageInput').disabled = true;
                     document.getElementById('sendBtn').disabled = true;
-
+                    
                     addMessage('system', 'System', 'Connection closed');
                 };
 
                 ws.onerror = function(error) {
-                    console.error('WebSocket error:', error);
+                    console.error('[FRONTEND-ERROR] WebSocket error:', error);
                     addMessage('system', 'System', 'Connection error occurred');
                 };
 
             } catch (error) {
-                console.error('Failed to connect:', error);
+                console.error('[FRONTEND-ERROR] Failed to connect:', error);
                 addMessage('system', 'System', 'Failed to connect to server');
             }
         }
 
         function disconnect() {
             if (ws) {
+                console.log('[FRONTEND-DISCONNECT] User initiated disconnect');
                 ws.close();
                 ws = null;
             }
@@ -115,6 +121,7 @@
                     content: content
                 };
 
+                console.log(`[FRONTEND-SEND] Sending message: ${content}`);
                 ws.send(JSON.stringify(message));
                 messageInput.value = '';
             }

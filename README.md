@@ -12,7 +12,8 @@ A simple Go WebSocket server for real-time messaging, similar to Discord. This s
 - Simple web interface for testing
 - **Cross-Origin Resource Sharing (CORS) support** for WebSocket connections
 - **Automatic message simulation** in the "general" channel for testing
-- **Console logging** for all messages, connections, and disconnections
+- **Console logging** for all messages, connections, and disconnections (server-side)
+- **Frontend console logging** in browser developer tools (client-side)
 
 ## Prerequisites
 
@@ -159,6 +160,40 @@ The server provides detailed console logging for monitoring activity:
 ```
 
 This logging makes it easy to monitor server activity, debug issues, and understand message flow patterns.
+
+## Frontend Console Logging
+
+The test client also provides detailed logging in the browser's developer console:
+
+### Frontend Log Types
+
+- **`[FRONTEND-CONNECT]`**: Connection attempts and successful connections
+- **`[FRONTEND-DISCONNECT]`**: User-initiated disconnections and connection closures
+- **`[FRONTEND-MESSAGE]`**: All incoming messages with full details including user IDs
+- **`[FRONTEND-SEND]`**: Outgoing messages being sent to the server
+- **`[FRONTEND-ERROR]`**: Connection errors and failures
+
+### Example Browser Console Output
+
+```javascript
+[FRONTEND-CONNECT] Attempting to connect to: ws://localhost:8080/ws?username=TestUser&channel=general
+[FRONTEND-CONNECT] Connected to WebSocket as TestUser in channel general
+[FRONTEND-MESSAGE] Type: system | User: System | Channel: general | Content: Welcome to the chat!
+[FRONTEND-MESSAGE] Type: message | User: ChatBot (ID: 550e8400-e29b-41d4-a716-446655440001) | Channel: general | Content: Welcome to the chat! 👋
+[FRONTEND-SEND] Sending message: Hello everyone!
+[FRONTEND-MESSAGE] Type: message | User: TestUser | Channel: general | Content: Hello everyone!
+[FRONTEND-DISCONNECT] User initiated disconnect
+[FRONTEND-DISCONNECT] Connection closed. Code: 1000, Reason: 
+```
+
+### How to View Frontend Logs
+
+1. Open the test client: `http://localhost:6969/`
+2. Press `F12` or right-click → "Inspect" → "Console" tab
+3. Connect to the chat and watch the console for detailed logging
+4. All WebSocket activity will be logged with clear prefixes
+
+This dual logging (server + frontend) provides complete visibility into the WebSocket communication flow.
 
 ## API Endpoints
 
