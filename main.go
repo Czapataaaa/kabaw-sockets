@@ -1,9 +1,11 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"log"
-	"math/rand"
+	mathrand "math/rand"
 	"net/http"
 	"sync"
 	"time"
@@ -27,6 +29,7 @@ type Client struct {
 	send     chan Message
 	hub      *Hub
 	username string
+	userID   string
 	channel  string
 }
 
@@ -122,12 +125,12 @@ func (h *Hub) StartMessageSimulation() {
 
 				if hasGeneralClients {
 					// Generate a random simulated message
-					selectedUser := simulatedUsers[rand.Intn(len(simulatedUsers))]
+					selectedUser := simulatedUsers[mathrand.Intn(len(simulatedUsers))]
 					message := Message{
 						Type:      "message",
 						Username:  selectedUser.Username,
 						UserID:    selectedUser.UserID,
-						Content:   simulatedMessages[rand.Intn(len(simulatedMessages))],
+						Content:   simulatedMessages[mathrand.Intn(len(simulatedMessages))],
 						Timestamp: getCurrentTimestamp(),
 						Channel:   "general",
 					}
@@ -156,11 +159,12 @@ func (h *Hub) Run() {
 
 			log.Printf("[CONNECT] User: %s | Channel: %s | Total clients: %d", client.username, client.channel, len(h.clients))
 
-			// Send welcome message
+			// Send welcome message with user ID
 			welcomeMsg := Message{
-				Type:      "system",
+				Type:      "user_connected",
 				Content:   "Welcome to the chat!",
 				Username:  "System",
+				UserID:    client.userID,
 				Timestamp: getCurrentTimestamp(),
 				Channel:   client.channel,
 			}
@@ -224,6 +228,7 @@ func (c *Client) readPump() {
 
 		// Set message metadata
 		msg.Username = c.username
+		msg.UserID = c.userID
 		msg.Timestamp = getCurrentTimestamp()
 		msg.Channel = c.channel
 
@@ -274,11 +279,15 @@ func handleWebSocket(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		channel = "general"
 	}
 
+	// Generate a unique user ID for this connection
+	userID := generateUserID()
+
 	client := &Client{
 		conn:     conn,
 		send:     make(chan Message, 256),
 		hub:      hub,
 		username: username,
+		userID:   userID,
 		channel:  channel,
 	}
 
@@ -315,9 +324,16 @@ func getCurrentTimestamp() string {
 	return time.Now().Format(time.RFC3339)
 }
 
+// generateUserID creates a random user ID
+func generateUserID() string {
+	bytes := make([]byte, 16)
+	rand.Read(bytes)
+	return hex.EncodeToString(bytes)
+}
+
 func main() {
 	// Seed random number generator
-	rand.Seed(time.Now().UnixNano())
+	mathrand.Seed(time.Now().UnixNano())
 
 	hub := NewHub()
 	go hub.Run()

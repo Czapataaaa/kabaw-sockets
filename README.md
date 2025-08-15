@@ -14,6 +14,7 @@ A simple Go WebSocket server for real-time messaging, similar to Discord. This s
 - **Automatic message simulation** in the "general" channel for testing
 - **Console logging** for all messages, connections, and disconnections (server-side)
 - **Frontend console logging** in browser developer tools (client-side)
+- **Automatic user ID generation** - each connection receives a unique user ID
 
 ## Prerequisites
 
@@ -217,6 +218,59 @@ The test client also provides detailed logging in the browser's developer consol
 
 This dual logging (server + frontend) provides complete visibility into the WebSocket communication flow.
 
+## User ID Management
+
+The server automatically generates and assigns a unique user ID to each connecting user:
+
+### How It Works
+
+1. **Connection**: When a user connects, the server generates a unique 32-character hexadecimal user ID
+2. **Assignment**: The user ID is sent to the client in a `user_connected` message
+3. **Storage**: The frontend stores the user ID in the `currentUserID` variable
+4. **Usage**: All user messages include the user ID in the `user_id` field
+5. **Cleanup**: The user ID is cleared when the connection closes
+
+### User ID Features
+
+- **Unique identification**: Each connection gets a cryptographically random user ID
+- **Persistent during session**: User ID remains constant throughout the WebSocket connection
+- **Automatic inclusion**: All user messages automatically include the user ID
+- **Frontend tracking**: Client-side JavaScript maintains the current user ID
+- **Console logging**: User ID assignment and clearing are logged in the browser console
+
+### Example User ID Flow
+
+```javascript
+// 1. User connects
+[FRONTEND-CONNECT] Connected to WebSocket as TestUser in channel general
+
+// 2. Server assigns user ID
+[FRONTEND-MESSAGE] {
+  "type": "user_connected",
+  "username": "System",
+  "user_id": "a1b2c3d4e5f67890abcdef1234567890",
+  "content": "Welcome to the chat!",
+  "timestamp": "2025-08-15T15:30:00Z",
+  "channel": "general"
+}
+
+// 3. Frontend logs user ID assignment
+[FRONTEND-USER-ID] Assigned user ID: a1b2c3d4e5f67890abcdef1234567890
+
+// 4. User messages include the ID
+[FRONTEND-MESSAGE] {
+  "type": "message",
+  "username": "TestUser",
+  "user_id": "a1b2c3d4e5f67890abcdef1234567890",
+  "content": "Hello everyone!",
+  "timestamp": "2025-08-15T15:30:15Z",
+  "channel": "general"
+}
+
+// 5. On disconnect, ID is cleared
+[FRONTEND-USER-ID] User ID cleared
+```
+
 ## API Endpoints
 
 ### WebSocket Connection
@@ -267,8 +321,9 @@ ws://localhost:8080/ws?username=JohnDoe&channel=general
 {
   "type": "message",
   "username": "JohnDoe",
+  "user_id": "a1b2c3d4e5f6789012345678",
   "content": "Hello, world!",
-  "timestamp": "2024-01-01T00:00:00Z",
+  "timestamp": "2025-08-15T15:30:00Z",
   "channel": "general"
 }
 ```
@@ -276,6 +331,7 @@ ws://localhost:8080/ws?username=JohnDoe&channel=general
 ### Message Types
 - `message`: Regular chat message
 - `system`: System notification (welcome messages, etc.)
+- `user_connected`: Special message sent when user connects, includes their assigned user ID
 
 ## Usage Examples
 

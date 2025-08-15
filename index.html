@@ -49,6 +49,7 @@
     <script>
         let ws = null;
         let currentUsername = '';
+        let currentUserID = null;
 
         function connect() {
             const username = document.getElementById('username').value || 'Anonymous';
@@ -78,6 +79,14 @@
                 ws.onmessage = function(event) {
                     const message = JSON.parse(event.data);
                     console.log('[FRONTEND-MESSAGE]', JSON.stringify(message, null, 2));
+                    
+                    // Handle user connection message to get user ID
+                    if (message.type === 'user_connected' && message.user_id) {
+                        currentUserID = message.user_id;
+                        console.log(`[FRONTEND-USER-ID] Assigned user ID: ${currentUserID}`);
+                        addMessage('system', 'System', `Your user ID: ${currentUserID}`);
+                    }
+                    
                     addMessage(message.type, message.username, message.content, message.timestamp);
                 };
 
@@ -88,6 +97,10 @@
                     document.getElementById('disconnectBtn').disabled = true;
                     document.getElementById('messageInput').disabled = true;
                     document.getElementById('sendBtn').disabled = true;
+                    
+                    // Reset user ID
+                    currentUserID = null;
+                    console.log('[FRONTEND-USER-ID] User ID cleared');
                     
                     addMessage('system', 'System', 'Connection closed');
                 };
