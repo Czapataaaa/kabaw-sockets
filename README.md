@@ -223,8 +223,9 @@ To test cross-origin WebSocket functionality:
 
 2. **Start the HTTP client server (port 6969):**
    ```bash
+   cd react-redux
    npm install
-   npm start
+   npm start /npm run dev
    ```
 
 3. **Access the test client:**
