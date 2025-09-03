@@ -28,8 +28,8 @@ export const connectionMiddleware = (store) => {
       };
 
       ws.onmessage = (event) => {
-        // Optionally dispatch actions with received data
-        // dispatch({ type: 'chat/messageReceived', payload: JSON.parse(event.data) });
+        const data = JSON.parse(event.data);
+        dispatch({ type: "chat/addMessage", payload: data });
       };
     }
 
@@ -37,6 +37,12 @@ export const connectionMiddleware = (store) => {
       if (ws) {
         ws.close();
         ws = null;
+      }
+    }
+
+    if (action.type === "chat/sendMessage") {
+      if (ws && ws.readyState === 1) {
+        ws.send(JSON.stringify(action.payload));
       }
     }
 

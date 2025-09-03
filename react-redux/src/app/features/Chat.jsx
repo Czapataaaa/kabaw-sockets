@@ -14,8 +14,11 @@ const chatSlice = createSlice({
     clearMessages: (state) => {
       state.message = [];
     },
+    sendMessage: (state, action) => {
+      // This reducer does not change state, it's just for middleware
+    },
   },
 });
 
-export const { addMessage, clearMessages } = chatSlice.actions;
+export const { addMessage, clearMessages, sendMessage } = chatSlice.actions;
 export default chatSlice.reducer;

@@ -14,6 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/molecules/sidebar";
 import ChatMessages from "@/components/organisms/chat-messages";
+import StatusCard from "../components/organisms/status-card";
 export default function Page() {
   return (
     <SidebarProvider>
@@ -41,7 +42,9 @@ export default function Page() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl">hi</div>
+            <div className="bg-muted/50 aspect-video rounded-xl">
+              <StatusCard />
+            </div>
             <div className="bg-muted/50 aspect-video rounded-xl">low</div>
             <div className="bg-muted/50 aspect-video rounded-xl">sound</div>
           </div>

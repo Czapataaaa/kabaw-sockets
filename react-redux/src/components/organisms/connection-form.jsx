@@ -32,11 +32,6 @@ export function ConnectionForm({ className, ...props }) {
     dispatch(setConnected());
   };
 
-  const handleDisconnect = () => {
-    dispatch(setDisconnected());
-    // Here you would also close your WebSocket connection
-  };
-
   return (
     <div className="flex justify-center items-center">
       <Card className="bg-black text-white shadow-xl rounded-2xl w-full max-w-4xl">
@@ -83,15 +78,6 @@ export function ConnectionForm({ className, ...props }) {
               </div>
               <Button type="submit" className="w-full" disabled={connected}>
                 Connect
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full bg-white text-black hover:bg-gray-200"
-                onClick={handleDisconnect}
-                disabled={!connected}
-              >
-                Disconnect
               </Button>
             </div>
 

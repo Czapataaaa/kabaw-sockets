@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Send } from "lucide-react";
 import { Input } from "@/components/atoms/input";
 import { Button } from "@/components/atoms/button";
@@ -6,61 +7,33 @@ import { ScrollArea } from "@/components/atoms/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/atoms/avatar";
 
 const ChatMessages = () => {
-  const [currentMessage, setCurrentMessage] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      username: "Alice",
-      content: "Hey everyone! How's the project coming along?",
-      timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-      isCurrentUser: false,
-    },
-    {
-      id: 2,
-      username: "Bob",
-      content: "Pretty good! Just finished the authentication module.",
-      timestamp: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
-      isCurrentUser: false,
-    },
-    {
-      id: 3,
-      username: "You",
-      content: "Awesome work Bob! I'm working on the chat interface right now.",
-      timestamp: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
-      isCurrentUser: true,
-    },
-    {
-      id: 4,
-      username: "Charlie",
-      content: "The UI is looking really clean! Love the shadcn components.",
-      timestamp: new Date(Date.now() - 1000 * 60 * 1).toISOString(),
-      isCurrentUser: false,
-    },
-  ]);
+  const dispatch = useDispatch();
+  const messages = useSelector((state) => state.chat.message);
+  const username = useSelector((state) => state.user.username);
+  const connected = useSelector((state) => state.connection.connected);
 
+  const [currentMessage, setCurrentMessage] = useState("");
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Send message to server via WebSocket
   const sendMessage = () => {
-    if (currentMessage.trim()) {
-      const newMessage = {
-        id: messages.length + 1,
-        username: "You",
-        content: currentMessage,
-        timestamp: new Date().toISOString(),
-        isCurrentUser: true,
-      };
-      setMessages([...messages, newMessage]);
+    if (currentMessage.trim() && connected) {
+      dispatch({
+        type: "chat/sendMessage",
+        payload: { type: "message", content: currentMessage },
+      });
       setCurrentMessage("");
     }
   };
+
+  // Listen for send-chat-message event in middleware
+  useEffect(() => {
+    // Remove custom event listener logic
+  }, []);
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -70,25 +43,23 @@ const ChatMessages = () => {
   };
 
   const formatTime = (timestamp) => {
+    if (!timestamp) return "";
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now - date;
-
     if (diff < 1000 * 60) return "just now";
     if (diff < 1000 * 60 * 60) return `${Math.floor(diff / (1000 * 60))}m ago`;
     if (diff < 1000 * 60 * 60 * 24)
       return `${Math.floor(diff / (1000 * 60 * 60))}h ago`;
-
     return date.toLocaleDateString();
   };
 
-  const getInitials = (name) => {
-    return name
+  const getInitials = (name) =>
+    name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase();
-  };
 
   const getAvatarColor = (name) => {
     const colors = [
@@ -117,16 +88,33 @@ const ChatMessages = () => {
               const isConsecutive =
                 index > 0 && messages[index - 1].username === message.username;
 
-              if (message.isCurrentUser) {
-                // Current user messages - right aligned with background
+              if (
+                message.type === "system" ||
+                message.type === "user_connected"
+              ) {
                 return (
                   <div
-                    key={message.id}
+                    key={message.timestamp + message.content}
+                    className="flex justify-center group -mx-2 px-2 py-1 rounded mt-4"
+                  >
+                    <div className="bg-yellow-100 dark:bg-yellow-900 px-3 py-2 rounded-lg text-sm leading-relaxed break-words text-center font-italic w-full">
+                      {message.content}
+                    </div>
+                  </div>
+                );
+              }
+
+              const isCurrentUser = message.username === username;
+
+              if (isCurrentUser) {
+                // Current user messages - right aligned
+                return (
+                  <div
+                    key={message.timestamp + message.content}
                     className={`flex justify-end group -mx-2 px-2 py-1 rounded ${
                       isConsecutive ? "mt-1" : "mt-4"
                     }`}
                   >
-                    {/* Message Content */}
                     <div className="max-w-[70%] min-w-0">
                       {showAvatar && (
                         <div className="flex items-center justify-end gap-2 mb-1">
@@ -138,13 +126,10 @@ const ChatMessages = () => {
                           </span>
                         </div>
                       )}
-
                       <div className="bg-primary text-primary-foreground px-3 py-2 rounded-lg text-sm leading-relaxed break-words">
                         {message.content}
                       </div>
                     </div>
-
-                    {/* Avatar */}
                     <div className="flex-shrink-0 ml-3">
                       {showAvatar ? (
                         <Avatar className="h-8 w-8">
@@ -166,12 +151,11 @@ const ChatMessages = () => {
                 // Other users' messages - left aligned
                 return (
                   <div
-                    key={message.id}
+                    key={message.timestamp + message.content}
                     className={`flex gap-3 group hover:bg-muted/30 -mx-2 px-2 py-1 rounded ${
                       isConsecutive ? "mt-1" : "mt-4"
                     }`}
                   >
-                    {/* Avatar */}
                     <div className="flex-shrink-0">
                       {showAvatar ? (
                         <Avatar className="h-8 w-8">
@@ -191,8 +175,6 @@ const ChatMessages = () => {
                         </div>
                       )}
                     </div>
-
-                    {/* Message Content */}
                     <div className="min-w-0 max-w-[70%]">
                       {showAvatar && (
                         <div className="flex items-center gap-2 mb-1">
@@ -204,7 +186,6 @@ const ChatMessages = () => {
                           </span>
                         </div>
                       )}
-
                       <div className="bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-lg text-sm text-foreground leading-relaxed break-words inline-block">
                         {message.content}
                       </div>
@@ -217,7 +198,6 @@ const ChatMessages = () => {
           </div>
         </ScrollArea>
       </div>
-
       {/* Message Input */}
       <div className="border-t bg-background p-4">
         <div className="flex gap-3 items-end">
@@ -229,11 +209,12 @@ const ChatMessages = () => {
               onKeyPress={handleKeyPress}
               className="min-h-[40px] resize-none pr-12 bg-muted/50 border-0 focus-visible:ring-1"
               style={{ lineHeight: "1.5" }}
+              disabled={!connected}
             />
           </div>
           <Button
             onClick={sendMessage}
-            disabled={!currentMessage.trim()}
+            disabled={!currentMessage.trim() || !connected}
             size="sm"
             className="h-10 px-4"
           >

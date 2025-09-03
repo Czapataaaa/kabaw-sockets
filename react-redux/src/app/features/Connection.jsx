@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   connected: false,
-  errol: null,
+  error: null,
 };
 
 const connectionSlice = createSlice({
