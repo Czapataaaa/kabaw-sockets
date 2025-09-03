@@ -1,11 +1,14 @@
-import { Button } from "@/components/atoms/button.jsx"
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
-    return (
-        <div className="flex min-h-svh flex-col items-center justify-center">
-            <Button>Click me</Button>
-        </div>
-    )
+  return (
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
