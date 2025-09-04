@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import {
@@ -21,6 +19,7 @@ export default function ChatUI() {
   const [messageInput, setMessageInput] = useState("");
   const [nameInput, setNameInput] = useState("");
   const [channelInput, setChannelInput] = useState("general");
+  const messagesEndRef = useRef(null);
 
   // Hook: connection state + methods
   const {
@@ -34,6 +33,13 @@ export default function ChatUI() {
 
   // Hook: message state + methods
   const { messages, sendMessage } = useWebSocketMessages();
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const handleConnect = () => {
     if (!nameInput.trim() || !channelInput.trim()) return;
@@ -49,7 +55,7 @@ export default function ChatUI() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <div className="grid grid-cols-3 gap-6 h-96">
+      <div className="grid grid-cols-3 gap-6 h-[600px]">
         {/* Connection Settings */}
         <Card>
           <CardHeader>
@@ -117,12 +123,12 @@ export default function ChatUI() {
         </Card>
 
         {/* Chat Messages */}
-        <Card className="col-span-2">
-          <CardHeader>
+        <Card className="col-span-2 flex flex-col">
+          <CardHeader className="flex-shrink-0">
             <CardTitle>Chat Messages</CardTitle>
           </CardHeader>
-          <CardContent className="p-0 h-full flex flex-col">
-            <ScrollArea className="flex-1 px-4">
+          <CardContent className="flex-1 flex flex-col min-h-0 p-0">
+            <ScrollArea className="h-[400px] px-4">
               <div className="space-y-3 py-4">
                 {messages.map((message) => (
                   <div key={message.id}>
@@ -166,10 +172,12 @@ export default function ChatUI() {
                     )}
                   </div>
                 ))}
+                {/* Invisible element to scroll to */}
+                <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
 
-            <div className="p-4 border-t">
+            <div className="flex-shrink-0 p-4 border-t">
               <div className="flex gap-2">
                 <Input
                   value={messageInput}
