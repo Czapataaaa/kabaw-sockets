@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import {
@@ -19,7 +19,8 @@ export default function ChatUI() {
   const [messageInput, setMessageInput] = useState("");
   const [nameInput, setNameInput] = useState("");
   const [channelInput, setChannelInput] = useState("general");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
 
   // Hook: connection state + methods
   const {
@@ -34,12 +35,12 @@ export default function ChatUI() {
   // Hook: message state + methods
   const { messages, sendMessage } = useWebSocketMessages();
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+    endOfMessagesRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [messages.length]);
 
   const handleConnect = () => {
     if (!nameInput.trim() || !channelInput.trim()) return;
@@ -127,8 +128,8 @@ export default function ChatUI() {
           <CardHeader className="flex-shrink-0">
             <CardTitle>Chat Messages</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col min-h-0 p-0">
-            <ScrollArea className="h-[400px] px-4">
+          <CardContent className="p-0 h-full flex flex-col">
+            <ScrollArea className="flex-1 px-4 max-h-[60vh]">
               <div className="space-y-3 py-4">
                 {messages.map((message) => (
                   <div key={message.id}>
@@ -172,8 +173,7 @@ export default function ChatUI() {
                     )}
                   </div>
                 ))}
-                {/* Invisible element to scroll to */}
-                <div ref={messagesEndRef} />
+                <div ref={endOfMessagesRef} />
               </div>
             </ScrollArea>
 

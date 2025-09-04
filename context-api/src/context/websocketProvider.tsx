@@ -50,6 +50,16 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
       ws.onmessage = (event) => {
         const message = JSON.parse(event.data);
+        console.log("[WS-MESSAGE] Received:", message);
+
+        // Capture assigned user ID if provided by server
+        if (message.type === "user_connected" && message.user_id) {
+          console.log("[WS-USER-ID] Assigned:", message.user_id);
+          dispatch({
+            type: WS_ACTIONS.SET_USER_INFO,
+            payload: { username, userID: message.user_id, channel },
+          });
+        }
         dispatch({
           type: WS_ACTIONS.ADD_MESSAGE,
           payload: {
@@ -98,6 +108,13 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       wsRef.current.readyState === WebSocket.OPEN
     ) {
       const message = { type: "message", content: content.trim() };
+      console.log(
+        "[WS-SEND] Sending:",
+        message,
+        "| user:", state.username,
+        "| userID:", state.userID,
+        "| channel:", state.channel
+      );
       wsRef.current.send(JSON.stringify(message));
     }
   };
