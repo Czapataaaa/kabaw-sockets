@@ -1,61 +1,53 @@
+"use client";
+
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/atoms/button";
+import { Input } from "@/components/atoms/input";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/atoms/card";
+import { Badge } from "@/components/atoms/badge";
+import { ScrollArea } from "@/components/atoms/scroll-area";
 import { Send, Wifi, WifiOff } from "lucide-react";
+import {
+  useWebSocketConnection,
+  useWebSocketMessages,
+} from "@/hooks/useWebSocket";
 
-export default function ChatUIDesign() {
+export default function ChatUI() {
   const [messageInput, setMessageInput] = useState("");
+  const [nameInput, setNameInput] = useState("");
+  const [channelInput, setChannelInput] = useState("general");
 
-  // Mock data for demonstration
-  const [isConnected] = useState(true);
-  const [username] = useState("testKabaw");
+  // Hook: connection state + methods
+  const {
+    isConnected,
+    connectionStatus,
+    username,
+    channel,
+    connect,
+    disconnect,
+  } = useWebSocketConnection();
 
-  const mockMessages = [
-    {
-      id: 1,
-      type: "system",
-      content: "Connected as testKabaw to channel general",
-    },
-    {
-      id: 2,
-      type: "message",
-      username: "Alice",
-      content: "Hey everyone! How is everyone doing today?",
-      timestamp: "10:30 AM",
-    },
-    {
-      id: 3,
-      type: "message",
-      username: "testKabaw",
-      content: "Doing great! Just testing out this new chat interface.",
-      timestamp: "10:32 AM",
-    },
-    {
-      id: 4,
-      type: "message",
-      username: "Bob",
-      content: "The new design looks really clean!",
-      timestamp: "10:33 AM",
-    },
-    {
-      id: 5,
-      type: "system",
-      content: "Charlie joined the channel",
-    },
-    {
-      id: 6,
-      type: "message",
-      username: "Charlie",
-      content: "Hello everyone! 👋",
-      timestamp: "10:35 AM",
-    },
-  ];
+  // Hook: message state + methods
+  const { messages, sendMessage } = useWebSocketMessages();
 
-  // Desktop Layout
-  const DesktopLayout = () => (
+  const handleConnect = () => {
+    if (!nameInput.trim() || !channelInput.trim()) return;
+    connect(nameInput.trim(), channelInput.trim());
+  };
+
+  const handleSendMessage = () => {
+    if (messageInput.trim()) {
+      sendMessage(messageInput.trim());
+      setMessageInput("");
+    }
+  };
+
+  return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="grid grid-cols-3 gap-6 h-96">
         {/* Connection Settings */}
@@ -66,15 +58,34 @@ export default function ChatUIDesign() {
           <CardContent className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">Name</label>
-              <Input defaultValue="testKabaw" />
+              <Input
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                placeholder="Enter your name"
+              />
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Channel</label>
-              <Input defaultValue="general" />
+              <Input
+                value={channelInput}
+                onChange={(e) => setChannelInput(e.target.value)}
+                placeholder="Enter channel"
+              />
             </div>
             <div className="flex gap-2">
-              <Button className="flex-1">Connect</Button>
-              <Button variant="outline" className="flex-1">
+              <Button
+                className="flex-1"
+                onClick={handleConnect}
+                disabled={isConnected}
+              >
+                Connect
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={disconnect}
+                disabled={!isConnected}
+              >
                 Disconnect
               </Button>
             </div>
@@ -92,8 +103,14 @@ export default function ChatUIDesign() {
                   ) : (
                     <WifiOff className="w-3 h-3" />
                   )}
-                  {isConnected ? "Connected" : "Disconnected"}
+                  {connectionStatus}
                 </Badge>
+                {username && (
+                  <p className="mt-2 text-xs opacity-75">
+                    Connected as <span className="font-medium">{username}</span>{" "}
+                    {channel && `in #${channel}`}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
@@ -107,7 +124,7 @@ export default function ChatUIDesign() {
           <CardContent className="p-0 h-full flex flex-col">
             <ScrollArea className="flex-1 px-4">
               <div className="space-y-3 py-4">
-                {mockMessages.map((message) => (
+                {messages.map((message) => (
                   <div key={message.id}>
                     {message.type === "system" ? (
                       <div className="text-center">
@@ -135,7 +152,10 @@ export default function ChatUIDesign() {
                               {message.username}
                             </span>
                             <span className="text-xs opacity-70">
-                              {message.timestamp}
+                              {new Date(message.timestamp).toLocaleTimeString(
+                                [],
+                                { hour: "2-digit", minute: "2-digit" }
+                              )}
                             </span>
                           </div>
                           <p className="text-sm leading-relaxed">
@@ -156,8 +176,16 @@ export default function ChatUIDesign() {
                   onChange={(e) => setMessageInput(e.target.value)}
                   placeholder="Type your message..."
                   className="flex-1"
+                  disabled={!isConnected}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSendMessage();
+                  }}
                 />
-                <Button size="sm">
+                <Button
+                  size="sm"
+                  onClick={handleSendMessage}
+                  disabled={!isConnected || !messageInput.trim()}
+                >
                   <Send className="w-4 h-4" />
                 </Button>
               </div>
@@ -167,5 +195,4 @@ export default function ChatUIDesign() {
       </div>
     </div>
   );
-  return <DesktopLayout />;
 }
