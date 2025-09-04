@@ -157,7 +157,7 @@ func (h *Hub) Run() {
 			h.clients[client] = true
 			h.mutex.Unlock()
 
-			log.Printf("[CONNECT] User: %s | Channel: %s | Total clients: %d", client.username, client.channel, len(h.clients))
+			log.Printf("[CONNECT] User: %s | UserID: %s | Channel: %s | Total clients: %d", client.username, client.userID, client.channel, len(h.clients))
 
 			// Send welcome message with user ID
 			welcomeMsg := Message{
@@ -233,7 +233,7 @@ func (c *Client) readPump() {
 		msg.Channel = c.channel
 
 		// Log the incoming message
-		log.Printf("[MESSAGE] Channel: %s | User: %s | Content: %s", msg.Channel, msg.Username, msg.Content)
+		log.Printf("[MESSAGE] Channel: %s | User: %s | UserID: %s | Content: %s", msg.Channel, msg.Username, msg.UserID, msg.Content)
 
 		// Broadcast the message
 		c.hub.broadcast <- msg

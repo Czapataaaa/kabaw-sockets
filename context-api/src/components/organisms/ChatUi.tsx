@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import {
@@ -22,6 +22,8 @@ export default function ChatUI() {
   const [nameInput, setNameInput] = useState("");
   const [channelInput, setChannelInput] = useState("general");
 
+  const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
+
   // Hook: connection state + methods
   const {
     isConnected,
@@ -34,6 +36,10 @@ export default function ChatUI() {
 
   // Hook: message state + methods
   const { messages, sendMessage } = useWebSocketMessages();
+
+  useEffect(() => {
+    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages.length]);
 
   const handleConnect = () => {
     if (!nameInput.trim() || !channelInput.trim()) return;
@@ -122,7 +128,7 @@ export default function ChatUI() {
             <CardTitle>Chat Messages</CardTitle>
           </CardHeader>
           <CardContent className="p-0 h-full flex flex-col">
-            <ScrollArea className="flex-1 px-4">
+            <ScrollArea className="flex-1 px-4 max-h-[60vh]">
               <div className="space-y-3 py-4">
                 {messages.map((message) => (
                   <div key={message.id}>
@@ -166,6 +172,7 @@ export default function ChatUI() {
                     )}
                   </div>
                 ))}
+                <div ref={endOfMessagesRef} />
               </div>
             </ScrollArea>
 
