@@ -19,7 +19,7 @@ export default function ChatUI() {
   const [messageInput, setMessageInput] = useState("");
   const [nameInput, setNameInput] = useState("");
   const [channelInput, setChannelInput] = useState("general");
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Hook: connection state + methods
   const {
