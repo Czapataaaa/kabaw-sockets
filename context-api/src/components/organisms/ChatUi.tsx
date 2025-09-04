@@ -9,7 +9,7 @@ import {
 } from "@/components/atoms/card";
 import { Badge } from "@/components/atoms/badge";
 import { ScrollArea } from "@/components/atoms/scroll-area";
-import { Send, Wifi, WifiOff } from "lucide-react";
+import { Send, Wifi, WifiOff, Trash } from "lucide-react";
 import {
   useWebSocketConnection,
   useWebSocketMessages,
@@ -33,7 +33,7 @@ export default function ChatUI() {
   } = useWebSocketConnection();
 
   // Hook: message state + methods
-  const { messages, sendMessage } = useWebSocketMessages();
+  const { messages, sendMessage, clearMessages } = useWebSocketMessages();
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({
@@ -126,7 +126,19 @@ export default function ChatUI() {
         {/* Chat Messages */}
         <Card className="col-span-2 flex flex-col">
           <CardHeader className="flex-shrink-0">
-            <CardTitle>Chat Messages</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Chat Messages</CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearMessages}
+                disabled={messages.length === 0}
+                title="Clear messages"
+              >
+                <Trash className="w-4 h-4 mr-1" />
+                Clear
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="p-0 h-full flex flex-col">
             <ScrollArea className="flex-1 px-4 max-h-[60vh]">
