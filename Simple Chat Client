@@ -1,0 +1,1 @@
+I implemented a minimal terminal-based chat client that connects to the WebSocket endpoint, joins a channel through query parameters, listens for incoming chat events, and prints them in real time.
