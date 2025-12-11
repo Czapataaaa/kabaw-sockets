@@ -1,0 +1,15 @@
+ * Start the backend WebSocket server *
+1. Download or clone the backend repository
+2. Open a terminal in the backend folder.
+3. Run the Go server (go run main.go)
+4. The WebSocket server will start on: (ws://localhost:8080/ws)
+
+* Start the chat client *
+1. Open a new terminal and go to the client folder (cd client)
+2. Install dependencies (npm install)
+3. Run the client (node client.js)
+4. You should now see:
+- Connected to Kabaw WebSocket
+- Joined channel message
+- Real-time chat messages from the server
+5. Type a message and press Enter to send it.
